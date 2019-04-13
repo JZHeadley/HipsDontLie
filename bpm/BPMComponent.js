@@ -9,8 +9,6 @@ class BPMComponent extends Component {
     bpmArr = []
     //tolernce of accelerometer data to prevent false hits
     tolerance = 1.07
-    //the range +- that an acceptible song is in
-    bpmTolerance = 5
 
     constructor(props) {
         super(props);
@@ -21,7 +19,6 @@ class BPMComponent extends Component {
             bpm: 0,
             hits: 0,
             userPreferences: 'acoustic,afrobeat,alt-rock,alternative,ambient'
-
         }
     }
 
@@ -44,7 +41,7 @@ class BPMComponent extends Component {
             }
             avg = avg / ammt
             con.setState({ bpm: avg })
-            con.props.onBPMChange(bpm);
+            this.props.onBPMChange(con.state.bpm);
             con.setState({ hits: 0 })
         }, 5000);
     }
