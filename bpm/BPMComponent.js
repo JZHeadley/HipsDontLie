@@ -23,26 +23,25 @@ class BPMComponent extends Component {
     }
 
     componentDidMount() {
-        con = this
 
         this.accelerometerSubscribe();
         this._interval = setInterval(() => {
-            if (con.bpmArr.length == con.bpmResistance) {
-                con.bpmArr.shift()
-                con.bpmArr.push(con.state.hits * 12)
+            if (this.bpmArr.length == this.bpmResistance) {
+                this.bpmArr.shift()
+                this.bpmArr.push(this.state.hits * 12)
             }
             else {
-                con.bpmArr.push(con.state.hits * 12)
+                this.bpmArr.push(this.state.hits * 12)
             }
-            let ammt = Math.min(con.bpmArr.length, con.bpmResistance)
+            let ammt = Math.min(this.bpmArr.length, this.bpmResistance)
             let avg = 0
             for (i = 0; i < ammt; i++) {
-                avg += con.bpmArr[i]
+                avg += this.bpmArr[i]
             }
             avg = avg / ammt
-            con.setState({ bpm: avg })
-            this.props.onBPMChange(con.state.bpm);
-            con.setState({ hits: 0 })
+            this.setState({ bpm: avg })
+            this.props.onBPMChange(this.state.bpm);
+            this.setState({ hits: 0 })
         }, 5000);
     }
 
@@ -52,11 +51,10 @@ class BPMComponent extends Component {
     }
 
     accelerometerSubscribe = () => {
-        con = this
         this._subscription = Accelerometer.addListener(
             accelerometerData => {
                 this.setState({ accelerometerData });
-                con.calculateHit();
+                this.calculateHit();
             }
         );
     };

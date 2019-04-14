@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import BPMComponent from '../bpm/BPMComponent.js';
 class HomeScreen extends React.Component {
     bpmRange = 5
-    songChangeTolorance = 10;
+    songChangeTolorance = 30;
 
     credentials = require('../secrets.js');
     url = 'https://api.spotify.com/v1/recommendations'
@@ -29,7 +29,8 @@ class HomeScreen extends React.Component {
             userPreferences: 'acoustic,afrobeat,alt-rock,alternative,ambient',
             minBPM: 0,
             maxBPM: 1,
-            oldBPM: 0
+            oldBPM: 0,
+            songURI: ""
         }
         this.handleBPMChange.bind(this);
         this.initializeSpotify();
@@ -117,6 +118,7 @@ class HomeScreen extends React.Component {
     }
 
     handleBPMChange = (bpm) => {
+        //con = this
         bpm = Math.min(bpm, 200)
         bpm = Math.max(bpm, 40)
         if (Math.abs(bpm - this.state.oldBPM) > this.songChangeTolorance) {
@@ -124,8 +126,20 @@ class HomeScreen extends React.Component {
             this.setState({ minBPM: Math.max(bpm - this.bpmRange, 0) })
             this.setState({ maxBPM: (bpm + this.bpmRange) })
             this.getSpotifyRecomendations()
-            this.getAlbumArt()
-
+            this.getAlbumArt(this.state.songURI)
+                .then((res) => res.json())
+                // .then(json => console.log(json))
+                .then(json => json["album"]["images"])
+                .then(images => images[0])
+                .then(image => {
+                    console.log(image)
+                    this.setState({ imageUrl: image })
+                })
+                .catch(errror => {
+                    console.warn(errror)
+                })
+            this.playSong(this.state.songURI)
+                .then(res => console.log(res))
         }
     }
 
@@ -134,20 +148,26 @@ class HomeScreen extends React.Component {
     }
 
     randomChoice(arr) {
-        return arr[Math.floor(Math.random() * arr.length)]
+        if (arr)
+            return arr[Math.floor(Math.random() * arr.length)]
     }
 
-    async getAlbumArt(uri) {
+    getAlbumArt(uri) {
         console.log("Fetching album Art")
-        return await fetch("https://api.spotify.com/v1/tracks/" + uri.split(":")[2], {
-            method: "GET",
-            headers: {
-                'Authorization': 'Bearer ' + this.userData.accessToken
-            },
-        }).then(res => {
-            console.log(res["album"]["images"][0])
-        })
+        let url = "https://api.spotify.com/v1/tracks/" + uri.split(":")[2] + "/"
+        console.log(url)
+        return fetch(url,
+            {
+                method: "GET",
+                headers: {
+                    'Authorization': 'Bearer ' + this.userData.accessToken,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            })
     }
+
+
 
     async getSpotifyRecomendations() {
         let con = this
@@ -166,22 +186,19 @@ class HomeScreen extends React.Component {
             }).then(async (res) => {
                 let songList = await res.json()
                 // Stop being undefined you async bastard
-                let songUri = con.randomChoice(songList.tracks) ? con.randomChoice(songList.tracks).uri : ''
-                return await con.playSong(songUri)
-                    .then(res => {
-                        // console.log(res)
-                    })
+                let songUri = con.randomChoice(songList.tracks) ? con.randomChoice(songList.tracks).uri : []
+                con.setState({ songURI: songUri })
             })
     }
 
-    async playSong(uri) {
+    playSong(uri) {
         console.log(uri)
         let bod = JSON.stringify({
             'uris': [uri]
         });
         console.log(this.userData.accessToken)
         // console.log("bod" + bod)
-        return await fetch("https://api.spotify.com/v1/me/player/play", {
+        return fetch("https://api.spotify.com/v1/me/player/play", {
             method: "PUT",
             headers: {
                 'Authorization': 'Bearer ' + this.userData.accessToken
@@ -194,7 +211,7 @@ class HomeScreen extends React.Component {
         return (
             <View style={styles.container}>
                 <Text>Accelerometer:</Text>
-                <BPMComponent onBPMChange={this.handleBPMChange}></BPMComponent>
+                <BPMComponent onBPMChange={this.handleBPMChange}></BPMComponent> 
                 <Button title="Settings" onPress={() => this.props.navigation.navigate('Settings')}>Settings</Button>
             </View>
         );
