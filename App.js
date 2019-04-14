@@ -4,12 +4,21 @@ import { createStackNavigator, createAppContainer } from "react-navigation";
 
 const AppNavigator = createStackNavigator(
   {
-    Home: { screen: HomeScreen },
-    Settings: { screen: SettingsComponent }
+    Home: {
+      screen: HomeScreen, navigationOptions: {
+        header: null,
+      }
+    },
+    Settings: {
+      screen: SettingsComponent, navigationOptions: {
+        header: null,
+      }
+    }
   },
   {
     initialRoute: "Home"
-  }
+  },
+
 );
 
 export default createAppContainer(AppNavigator);

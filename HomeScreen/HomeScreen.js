@@ -141,7 +141,7 @@ class HomeScreen extends React.Component {
 
 
                     this.playSong(this.state.songURI)
-                        .then(res => console.log(res))
+                        .then(_ => console.log("playing new song"))
                 }).catch(errror => {
                     console.warn(errror)
                 });
@@ -161,7 +161,6 @@ class HomeScreen extends React.Component {
     getAlbumArt(uri) {
         console.log("Fetching album Art")
         let url = "https://api.spotify.com/v1/tracks/" + uri.split(":")[2] + "/"
-        console.log(url)
         return fetch(url,
             {
                 method: "GET",
@@ -176,7 +175,6 @@ class HomeScreen extends React.Component {
 
 
     async getSpotifyRecomendations() {
-        let con = this
         console.log("Getting recommendations")
         return fetch(this.url +
             '?seed_genres=' + this.state.userPreferences +
@@ -192,8 +190,8 @@ class HomeScreen extends React.Component {
             }).then(async (res) => {
                 let songList = await res.json()
                 // Stop being undefined you async bastard
-                let songUri = con.randomChoice(songList.tracks) ? con.randomChoice(songList.tracks).uri : []
-                con.setState({ songURI: songUri })
+                let songUri = this.randomChoice(songList.tracks) ? this.randomChoice(songList.tracks).uri : []
+                this.setState({ songURI: songUri })
             })
     }
 
@@ -218,9 +216,11 @@ class HomeScreen extends React.Component {
         return (
             <View style={styles.container}>
                 <Image style={styles.background} source={{ uri: imageSrc }} />
-                <Text>Accelerometer:</Text>
-                <BPMComponent onBPMChange={this.handleBPMChange}></BPMComponent>
-                <Button title="Settings" onPress={() => this.props.navigation.navigate('Settings')}>Settings</Button>
+                <View style={[styles.bottom, styles.whiteText]}>
+                    <Text>Accelerometer:</Text>
+                    <BPMComponent onBPMChange={this.handleBPMChange}></BPMComponent>
+                    <Button title="Settings" onPress={() => this.props.navigation.navigate('Settings')}>Settings</Button>
+                </View>
             </View>
         );
     }
@@ -229,14 +229,25 @@ class HomeScreen extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        // backgroundColor: '#fff',
+        backgroundColor: '#222222',
         alignItems: 'center',
-        justifyContent: 'center',
+        flex: 1,
+        color: 'white',
+        justifyContent: 'center'
     },
     background: {
+        width: '100%',
         flex: 1,
-        alignItems: 'center'
+        alignItems: 'center',
+        resizeMode: "contain"
+    },
+    bottom: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        marginBottom: 36
+    },
+    whiteText: {
+        color: 'white'
     }
 });
 export default HomeScreen
