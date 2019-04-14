@@ -170,7 +170,7 @@ export default class Spotify {
             '?seed_genres=' + this.state.userPreferences +
             '&min_tempo=' + (Math.max((this.state.bpm - this.bmpTolerance), 0)) +
             '&max_tempo=' + (this.state.bpm + this.bmpTolerance) +
-            '&target_danceability=0.8' +
+            '&target_danceability=0.85' +
             '&market=US',
             {
                 method: "GET",
@@ -191,7 +191,24 @@ export default class Spotify {
             body: {
                 'context_uri': uri
             }
+        }).then(async (res) => {
+          return await fetch("https://api.spotify.com/v1/me/player", {
+              'Authorization': 'Bearer ' + this.userData.accessToken
+          })
         })
+    }
+
+    async pauseSong() {
+      return await fetch("https://api.spotify.com/v1/me/player/pause", {
+        method: "PUT" ,
+        headers: {
+          'Authorization': 'Bearer ' + this.userData.accessToken
+        },
+      }).then(async (res) => {
+          return await fetch('https://api.spotify.com/v1/me/player', {
+            'Authorization': 'Bearer ' + this.userData.accessToken
+          }
+      })
     }
 
     render() {
