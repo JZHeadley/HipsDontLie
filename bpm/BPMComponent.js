@@ -104,6 +104,7 @@ const customStyles = StyleSheet.create({
         marginBottom: 64
     },
     whiteText: {
+        fontSize:30,
         color: 'ghostwhite'
     }
 });

@@ -229,7 +229,7 @@ class HomeScreen extends React.Component {
                 <Text style={customStyles.whiteText}>{trackName == undefined ? "" : "" + trackName}</Text>
                 <Text style={customStyles.whiteText}>{artistName == undefined ? "" : "" + artistName}</Text>
                 <View style={[customStyles.bottom]}>
-                    <Text style={customStyles.whiteText}>Accelerometer:</Text>
+                    {/* <Text style={customStyles.whiteText}>Accelerometer:</Text> */}
                     <BPMComponent style={marginBottom = 16} onBPMChange={this.handleBPMChange}></BPMComponent>
                     <Button title="Settings" onPress={() => this.props.navigation.navigate('Settings')}>Settings</Button>
                 </View>
@@ -247,8 +247,10 @@ const customStyles = StyleSheet.create({
     },
     background: {
         width: '100%',
+        height: null,
         flex: 1,
         alignItems: 'center',
+        aspectRatio: 1, 
         resizeMode: "contain"
     },
     bottom: {
@@ -257,6 +259,7 @@ const customStyles = StyleSheet.create({
         marginBottom: 64
     },
     whiteText: {
+        fontSize: 20,
         color: 'ghostwhite'
     }
 });

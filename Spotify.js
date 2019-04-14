@@ -192,23 +192,24 @@ export default class Spotify {
                 'context_uri': uri
             }
         }).then(async (res) => {
-          return await fetch("https://api.spotify.com/v1/me/player", {
-              'Authorization': 'Bearer ' + this.userData.accessToken
-          })
+            return await fetch("https://api.spotify.com/v1/me/player", {
+                'Authorization': 'Bearer ' + this.userData.accessToken
+            })
         })
     }
 
     async pauseSong() {
-      return await fetch("https://api.spotify.com/v1/me/player/pause", {
-        method: "PUT" ,
-        headers: {
-          'Authorization': 'Bearer ' + this.userData.accessToken
-        },
-      }).then(async (res) => {
-          return await fetch('https://api.spotify.com/v1/me/player', {
-            'Authorization': 'Bearer ' + this.userData.accessToken
-          }
-      })
+        return await fetch("https://api.spotify.com/v1/me/player/pause", {
+            method: "PUT",
+            headers: {
+                'Authorization': 'Bearer ' + this.userData.accessToken
+            },
+        }).then(async (res) => {
+            return await fetch('https://api.spotify.com/v1/me/player', {
+                'Authorization': 'Bearer ' + this.userData.accessToken
+            }
+            )
+        })
     }
 
     render() {
