@@ -1,7 +1,7 @@
 import React from 'react';
 import { AuthSession } from 'expo'
 import { encode as btoa } from 'base-64'
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import BPMComponent from '../bpm/BPMComponent.js';
 class HomeScreen extends React.Component {
     bpmRange = 5
@@ -35,7 +35,7 @@ class HomeScreen extends React.Component {
         this.handleBPMChange.bind(this);
         this.initializeSpotify();
     }
-    scopes = 'user-modify-playback-state app-remote-control streaming user-read-playback-state user-library-modify user-library-read user-read-recently-played user-top-read user-read-currently-playing'
+    scopes = 'user-modify-playback-state app-remote-control streaming user-read-playback-state user-read-currently-playing'
     async initializeSpotify() {
         const tokenExpirationTime = this.userData.expirationTime
         if (!tokenExpirationTime || new Date().getTime() > tokenExpirationTime) {
@@ -126,20 +126,26 @@ class HomeScreen extends React.Component {
             this.setState({ minBPM: Math.max(bpm - this.bpmRange, 0) })
             this.setState({ maxBPM: (bpm + this.bpmRange) })
             this.getSpotifyRecomendations()
-            this.getAlbumArt(this.state.songURI)
-                .then((res) => res.json())
-                // .then(json => console.log(json))
-                .then(json => json["album"]["images"])
-                .then(images => images[0])
-                .then(image => {
-                    console.log(image)
-                    this.setState({ imageUrl: image })
-                })
-                .catch(errror => {
+                .then(_ => {
+                    if (this.state.songURI == undefined)
+                        return;
+                    this.getAlbumArt(this.state.songURI)
+                        .then((res) => res.json())
+                        // .then(json => console.log(json))
+                        .then(json => json["album"]["images"])
+                        .then(images => images[0])
+                        .then(image => {
+                            console.log(image["url"])
+                            this.setState({ imageUrl: image["url"] })
+                        })
+
+
+                    this.playSong(this.state.songURI)
+                        .then(res => console.log(res))
+                }).catch(errror => {
                     console.warn(errror)
-                })
-            this.playSong(this.state.songURI)
-                .then(res => console.log(res))
+                });
+
         }
     }
 
@@ -172,7 +178,7 @@ class HomeScreen extends React.Component {
     async getSpotifyRecomendations() {
         let con = this
         console.log("Getting recommendations")
-        return await fetch(this.url +
+        return fetch(this.url +
             '?seed_genres=' + this.state.userPreferences +
             '&min_tempo=' + this.state.minBPM +
             '&max_tempo=' + this.state.maxBPM +
@@ -208,10 +214,12 @@ class HomeScreen extends React.Component {
     }
 
     render() {
+        let imageSrc = this.state.imageUrl;
         return (
             <View style={styles.container}>
+                <Image style={styles.background} source={{ uri: imageSrc }} />
                 <Text>Accelerometer:</Text>
-                <BPMComponent onBPMChange={this.handleBPMChange}></BPMComponent> 
+                <BPMComponent onBPMChange={this.handleBPMChange}></BPMComponent>
                 <Button title="Settings" onPress={() => this.props.navigation.navigate('Settings')}>Settings</Button>
             </View>
         );
@@ -222,9 +230,13 @@ class HomeScreen extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        // backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
     },
+    background: {
+        flex: 1,
+        alignItems: 'center'
+    }
 });
 export default HomeScreen
