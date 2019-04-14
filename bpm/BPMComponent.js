@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Accelerometer } from 'expo';
 
 
@@ -76,12 +76,36 @@ class BPMComponent extends Component {
         }
     }
     render() {
+
         return (
             <View>
-                <Text>Hits: {this.state.hits}</Text>
-                <Text>BPM: {this.state.bpm}</Text>
+                <Text style={customStyles.whiteText}>Hits: {this.state.hits}</Text>
+                <Text style={customStyles.whiteText}>BPM: {this.state.bpm}</Text>
             </View>
         )
     }
 }
+const customStyles = StyleSheet.create({
+    container: {
+        backgroundColor: '#222222',
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center'
+    },
+    background: {
+        width: '100%',
+        flex: 1,
+        alignItems: 'center',
+        resizeMode: "contain"
+    },
+    bottom: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        marginBottom: 64
+    },
+    whiteText: {
+        color: 'ghostwhite'
+    }
+});
+
 export default BPMComponent;

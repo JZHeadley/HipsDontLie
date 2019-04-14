@@ -3,10 +3,10 @@ import { AuthSession } from 'expo'
 import { encode as btoa } from 'base-64'
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import BPMComponent from '../bpm/BPMComponent.js';
+
 class HomeScreen extends React.Component {
     bpmRange = 5
     songChangeTolorance = 30;
-
     credentials = require('../secrets.js');
     url = 'https://api.spotify.com/v1/recommendations'
     auth_url = 'https://accounts.spotify.com/authorize'
@@ -132,14 +132,17 @@ class HomeScreen extends React.Component {
                     this.getAlbumArt(this.state.songURI)
                         .then((res) => res.json())
                         // .then(json => console.log(json))
-                        .then(json => json["album"]["images"])
-                        .then(images => images[0])
-                        .then(image => {
-                            console.log(image["url"])
-                            this.setState({ imageUrl: image["url"] })
+                        .then(json => {
+                            let imageUrl = json["album"]["images"][0]["url"];
+                            let trackName = json["name"];
+                            let artist = json["artists"][0]["name"];
+                            console.log(imageUrl)
+                            this.setState({
+                                imageUrl: imageUrl,
+                                trackName: trackName,
+                                artistName: artist
+                            })
                         })
-
-
                     this.playSong(this.state.songURI)
                         .then(_ => console.log("playing new song"))
                 }).catch(errror => {
@@ -213,26 +216,33 @@ class HomeScreen extends React.Component {
 
     render() {
         let imageSrc = this.state.imageUrl;
+        let artistName = this.state.artistName;
+        let trackName = this.state.trackName;
+        let trackInfo = ""
+        if (artistName != undefined && trackName != undefined) {
+            trackInfo = <View>
+            </View>
+        }
         return (
-            <View style={styles.container}>
-                <Image style={styles.background} source={{ uri: imageSrc }} />
-                <View style={[styles.bottom, styles.whiteText]}>
-                    <Text>Accelerometer:</Text>
-                    <BPMComponent onBPMChange={this.handleBPMChange}></BPMComponent>
+            <View style={customStyles.container}>
+                <Image style={customStyles.background} source={{ uri: imageSrc }} />
+                <Text style={customStyles.whiteText}>{trackName == undefined ? "" : "" + trackName}</Text>
+                <Text style={customStyles.whiteText}>{artistName == undefined ? "" : "" + artistName}</Text>
+                <View style={[customStyles.bottom]}>
+                    <Text style={customStyles.whiteText}>Accelerometer:</Text>
+                    <BPMComponent style={marginBottom = 16} onBPMChange={this.handleBPMChange}></BPMComponent>
                     <Button title="Settings" onPress={() => this.props.navigation.navigate('Settings')}>Settings</Button>
                 </View>
-            </View>
+            </View >
         );
     }
 
 }
-
-const styles = StyleSheet.create({
+const customStyles = StyleSheet.create({
     container: {
         backgroundColor: '#222222',
         alignItems: 'center',
         flex: 1,
-        color: 'white',
         justifyContent: 'center'
     },
     background: {
@@ -244,10 +254,10 @@ const styles = StyleSheet.create({
     bottom: {
         flex: 1,
         justifyContent: 'flex-end',
-        marginBottom: 36
+        marginBottom: 64
     },
     whiteText: {
-        color: 'white'
+        color: 'ghostwhite'
     }
 });
 export default HomeScreen

@@ -7,8 +7,11 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.10",
+    "@emotion/styled": "^10.0.10",
     "axios": "^0.18.0",
     "base-64": "^0.1.0",
+    "emotion": "^10.0.9",
     "expo": "^32.0.0",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
