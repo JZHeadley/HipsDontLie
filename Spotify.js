@@ -191,6 +191,10 @@ export default class Spotify {
             body: {
                 'context_uri': uri
             }
+        }).then(async (res) => {
+          return await fetch("https://api.spotify.com/v1/me/player", {
+              'Authorization': 'Bearer ' + this.userData.accessToken
+          })
         })
     }
 
@@ -200,7 +204,11 @@ export default class Spotify {
         headers: {
           'Authorization': 'Bearer ' + this.userData.accessToken
         },
-      }) 
+      }).then(async (res) => {
+          return await fetch('https://api.spotify.com/v1/me/player', {
+            'Authorization': 'Bearer ' + this.userData.accessToken
+          }
+      })
     }
 
     render() {
